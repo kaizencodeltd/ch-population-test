@@ -7,7 +7,7 @@ import { motion } from "motion/react";
 import { toHash } from "@/utils/hashing";
 
 // How many countries are displayed in the chart
-const countriesToDisplayCount = 20
+const countriesToDisplayCount = 10
 // Time before we move onto the next year
 const goToNextYearInterval = 650;
 // Controls the animation speed for the bar resizing when transitioning to the next year
