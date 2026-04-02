@@ -1,0 +1,216 @@
+@import url("https://fonts.googleapis.com/css2?family=Anton&display=swap");
+
+.title,
+.year {
+  font-family: "Anton", Impact, sans-serif;
+  text-align: center;
+  letter-spacing: 3px;
+}
+
+.title {
+  font-size: clamp(16px, 5.5vw, 24px);
+  text-shadow: 5px 10px 10px black;
+}
+
+.year {
+  margin-top: 10px;
+  font-size: clamp(16px, 4.5vw, 20px);
+  text-shadow: 5px 10px 10px black;
+}
+
+@media (min-width: 600px) {
+  .title {
+    font-size: 40px;
+  }
+  .year {
+    margin-top: 20px;
+    font-size: 36px;
+  }
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: 52px;
+  }
+  .year {
+    font-size: 44px;
+  }
+}
+
+@media (min-width: 900px) {
+  .title {
+    font-size: 64px;
+  }
+  .year {
+    font-size: 48px;
+  }
+}
+
+@media (min-width: 1300px) {
+  .title {
+    font-size: 96px;
+  }
+  .year {
+    font-size: 40px;
+  }
+}
+
+.populationChartContainer {
+  width: 100%;
+  position: relative;
+}
+
+.chart {
+  margin-top: 20px;
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 80px 1fr 76px;
+  align-items: center;
+  column-gap: 6px;
+  height: 22px;
+  margin-bottom: 6px;
+}
+
+.country,
+.populationCount {
+  font-size: 11px;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.country {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.populationCount {
+  text-align: right;
+}
+
+.barTrack {
+  position: relative;
+  height: 20px;
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  border-radius: 4px;
+  min-width: 4px;
+}
+
+@media (min-width: 600px) {
+  .chart {
+    margin-top: 48px;
+  }
+
+  .row {
+    grid-template-columns: 180px 1fr 140px;
+    column-gap: 16px;
+    height: 30px;
+    margin-bottom: 10px;
+  }
+
+  .country,
+  .populationCount {
+    font-size: 18px;
+  }
+
+  .barTrack {
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  .bar {
+    border-radius: 6px;
+  }
+}
+
+.controlsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.selectsContainer {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.buttonsContainer {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.button {
+  background-color: #65789b;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #52607b;
+
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  transition-delay: 0s;
+}
+
+.select {
+  border-radius: 0.5rem;
+  height: 2.75rem;
+  font-size: 14px;
+  padding: 6px 10px;
+  background-color: #65789b;
+  flex: 1;
+  max-width: 200px;
+}
+
+@media (min-width: 600px) {
+  .controlsContainer {
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .selectsContainer {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  .select {
+    flex: 0 0 auto;
+    max-width: none;
+    height: 3.5rem;
+    font-size: 18px;
+    padding: 10px 16px;
+  }
+
+  .button {
+    padding: 15px 24px;
+    font-size: 18px;
+  }
+}
