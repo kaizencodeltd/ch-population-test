@@ -1,8 +1,9 @@
 
 # Intro
 Implementation of a technical test. An animated bar chart race visualizing world population rankings by country over time. This app can be either run locally or accessed at https://ch-population-test.vercel.app/
- 
+
 ## Notes
+- Tested on Chrome v146 and Firefox v149
 - PopulationChart2 was my second attempt at the solution. At first, I've looked into implementing the given task via a Chart library. I've picked Recharts as it seemed a popular choice and easy to use.
 It was a good solution except for implementing the required animations. 
 It might have been possible using the library but I couldn't find good examples online and I would have spent too much time trying to make it work.
@@ -27,6 +28,7 @@ If you want to check out <PopulationChart /> you should be able to do so by unco
  Developed with Node v24.14.0 installed locally (min version should be Node.js >=18.18.0)
 
 ## Potential Improvements
+- Better mobile UI. It's decent but it definetely has room for improvement.
 - Better error scenario UI. I didn't spend much time on this. Can be simulated by throwing an error in `app/api/population/route.ts`
 - UI to control speed
 - UI to change amount of displayed countries

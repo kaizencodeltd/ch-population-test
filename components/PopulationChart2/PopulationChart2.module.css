@@ -8,14 +8,24 @@
 }
 
 .title {
-  font-size: 40px;
+  font-size: clamp(16px, 5.5vw, 24px);
   text-shadow: 5px 10px 10px black;
 }
 
 .year {
-  margin-top: 20px;
-  font-size: 36px;
+  margin-top: 10px;
+  font-size: clamp(16px, 4.5vw, 20px);
   text-shadow: 5px 10px 10px black;
+}
+
+@media (min-width: 600px) {
+  .title {
+    font-size: 40px;
+  }
+  .year {
+    margin-top: 20px;
+    font-size: 36px;
+  }
 }
 
 @media (min-width: 768px) {
@@ -52,7 +62,7 @@
 }
 
 .chart {
-  margin-top: 48px;
+  margin-top: 20px;
 
   display: flex;
   flex-direction: column;
@@ -61,22 +71,24 @@
 
 .row {
   display: grid;
-  grid-template-columns: 180px 1fr 140px;
+  grid-template-columns: 80px 1fr 76px;
   align-items: center;
-  column-gap: 16px;
-  height: 30px;
-  margin-bottom: 10px;
+  column-gap: 6px;
+  height: 22px;
+  margin-bottom: 6px;
 }
 
 .country,
 .populationCount {
-  font-size: 18px;
+  font-size: 11px;
   white-space: nowrap;
   font-weight: 600;
 }
 
 .country {
-  text-align: center;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .populationCount {
@@ -85,13 +97,41 @@
 
 .barTrack {
   position: relative;
-  height: 28px;
+  height: 20px;
   width: 100%;
-  border-radius: 6px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .bar {
   height: 100%;
-  border-radius: 6px;
+  border-radius: 4px;
+  min-width: 4px;
+}
+
+@media (min-width: 600px) {
+  .chart {
+    margin-top: 48px;
+  }
+
+  .row {
+    grid-template-columns: 180px 1fr 140px;
+    column-gap: 16px;
+    height: 30px;
+    margin-bottom: 10px;
+  }
+
+  .country,
+  .populationCount {
+    font-size: 18px;
+  }
+
+  .barTrack {
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  .bar {
+    border-radius: 6px;
+  }
 }
