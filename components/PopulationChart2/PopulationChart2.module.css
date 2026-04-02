@@ -46,7 +46,6 @@
   }
 }
 
-
 @media (min-width: 1300px) {
   .title {
     font-size: 96px;
@@ -56,9 +55,9 @@
   }
 }
 
-
 .populationChartContainer {
   width: 100%;
+  position: relative;
 }
 
 .chart {
@@ -133,5 +132,85 @@
 
   .bar {
     border-radius: 6px;
+  }
+}
+
+.controlsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.selectsContainer {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.buttonsContainer {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.button {
+  background-color: #65789b;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #52607b;
+
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  transition-delay: 0s;
+}
+
+.select {
+  border-radius: 0.5rem;
+  height: 2.75rem;
+  font-size: 14px;
+  padding: 6px 10px;
+  background-color: #65789b;
+  flex: 1;
+  max-width: 200px;
+}
+
+@media (min-width: 600px) {
+  .controlsContainer {
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .selectsContainer {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  .select {
+    flex: 0 0 auto;
+    max-width: none;
+    height: 3.5rem;
+    font-size: 18px;
+    padding: 10px 16px;
+  }
+
+  .button {
+    padding: 15px 24px;
+    font-size: 18px;
   }
 }

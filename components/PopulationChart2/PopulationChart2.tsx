@@ -6,8 +6,6 @@ import { CountriesYearlyData, Country, PopulationData } from "@/types/population
 import { motion } from "motion/react";
 import { toHash } from "@/utils/hashing";
 
-// How many countries are displayed in the chart
-const countriesToDisplayCount = 10
 // Time before we move onto the next year
 const goToNextYearInterval = 650;
 // Controls the animation speed for the bar resizing when transitioning to the next year
@@ -33,15 +31,16 @@ const palette = [
     '#008685',
     '#F08BB4',
 ];
-function Chart({ data, prevData }: { data: ChartRow[]; prevData: ChartRow[] | null }) {
-    // Sort by Population, take top 20
+
+function Chart({ data, prevData, countriesToDisplayCount }: { data: ChartRow[]; prevData: ChartRow[] | null; countriesToDisplayCount: number }) {
+    // Sort by Population, take top {countriesToDisplayCount}
     // memo the result to avoid recomputation
 
     const sortedData = useMemo(() => {
         return [...data]
             .sort((a, b) => b.Population - a.Population)
             .slice(0, countriesToDisplayCount);
-    }, [data]);
+    }, [data, countriesToDisplayCount]);
 
     const prevSortedData = useMemo(() => {
         if (!prevData) return null;
@@ -49,14 +48,14 @@ function Chart({ data, prevData }: { data: ChartRow[]; prevData: ChartRow[] | nu
         return [...prevData]
             .sort((a, b) => b.Population - a.Population)
             .slice(0, countriesToDisplayCount);
-    }, [prevData]);
+    }, [prevData, countriesToDisplayCount]);
 
 
     // List of countries that have changed their placing compared to the previous year
     // Might be a bit of an overkill to be honest, but it allows us to have the bar transitions to
     // take full amount of time available (goToNextYearInterval) for countries that have remained in the same position
     // while for countries with a different position the bar resizing will take goToNextYearInterval (in ms) - chartRowMoveAnimSpeed
-    // as the resizing will start after the row has been moved to the new position and will be as fast as 
+    // as the resizing will start after the row has been moved to the new position and will be as fast as
     // teh remaining time before the year changes again.
     const movedCountries = useMemo(() => {
         if (!prevSortedData) {
@@ -133,7 +132,6 @@ function toFormattedNumber(value: number) {
     return new Intl.NumberFormat().format(value)
 }
 
-
 // Prepares the data for the chart by copying the existing properties and adding new ones relative to the UI (e.g. associated color)
 function toChartRow(country: Country): ChartRow {
     return {
@@ -149,19 +147,56 @@ function getCountryColor(country: string): string {
     // There might be better ways (or more performant) but didn't want to spend too much time on this aspect and it seems to work well. 
     return palette[toHash(country) % palette.length];
 }
-
 export default function PopulationChart() {
     const [data, setData] = useState<PopulationData | null>(null);
-
-
     const [indexes, setIndexes] = useState({ current: 0, prev: null as number | null });
-
-
+    const [isAutoplaying, setIsAutoplaying] = useState(true);
+    const [countriesToDisplayCount, setCountriesToDisplayCount] = useState(15);
     const [isLoading, setLoading] = useState(true);
 
+    // local functions
+    function onSelectYearChange(event: React.ChangeEvent<HTMLSelectElement>) {
+        const newIndex = Number(event.target.value);
+
+        setIsAutoplaying(false);
+        setIndexes(({ current }) => ({
+            prev: current,
+            current: newIndex
+        }));
+    }
+
+    function onSelectCountriesToDisplayChange(event: React.ChangeEvent<HTMLSelectElement>) {
+        const newDisplayCount = Number(event.target.value);
+        setCountriesToDisplayCount(newDisplayCount);
+    }
+
+    function goToPreviousYear() {
+        if (!data || data.length === 0) return;
+
+        setIsAutoplaying(false);
+        setIndexes(({ current }) => ({
+            prev: current,
+            current: current === 0 ? data.length - 1 : current - 1
+        }));
+    }
+
+    function goToNextYear() {
+        if (!data || data.length === 0) return;
+
+        setIsAutoplaying(false);
+        setIndexes(({ current }) => ({
+            prev: current,
+            current: (current + 1) % data.length
+        }));
+    }
+
+    function toggleAutoplay() {
+        setIsAutoplaying((value) => !value);
+    }
+
+    //////
 
     useEffect(() => {
-        let intervalId: number | undefined;
         const controller = new AbortController();
 
         fetch('/api/population', { signal: controller.signal })
@@ -173,13 +208,6 @@ export default function PopulationChart() {
                     prev: null
                 });
                 setLoading(false);
-
-                intervalId = window.setInterval(() => {
-                    setIndexes(({ current }) => ({
-                        prev: current,
-                        current: (current + 1) % data.length
-                    }));
-                }, goToNextYearInterval);
             })
             .catch((error: unknown) => {
                 if (error instanceof Error && error.name === 'AbortError') return;
@@ -188,17 +216,33 @@ export default function PopulationChart() {
 
         return () => {
             controller.abort();
-            if (intervalId !== undefined) {
-                window.clearInterval(intervalId);
-            }
         };
     }, []);
 
-    if (isLoading) return <p>Loading...</p>;
+    useEffect(() => {
+        if (!data || data.length === 0 || !isAutoplaying) {
+            return;
+        }
+
+        const intervalId = window.setInterval(() => {
+            setIndexes(({ current }) => ({
+                prev: current,
+                current: (current + 1) % data.length
+            }));
+        }, goToNextYearInterval);
+
+        return () => {
+            window.clearInterval(intervalId);
+        };
+    }, [data, isAutoplaying]);
+
+    //////
+
+    if (isLoading)
+        return <p>Loading...</p>;
 
     if (!data || data.length === 0)
         return (
-
             <div className={styles.populationChartContainer}>
                 <h1 className={styles.title}>World Population By Year</h1>
                 <h2 className={styles.year}>Error - No population data available</h2>
@@ -209,15 +253,57 @@ export default function PopulationChart() {
     const prevChartData: CountriesYearlyData | null = indexes.prev !== null ? data[indexes.prev] : null;
 
     const rows: ChartRow[] = chartData.Countries.map((item) => toChartRow(item));
-    const prevRows: ChartRow[] | null =
-        prevChartData ? prevChartData.Countries.map((item) => toChartRow(item)) : null;
+    const prevRows: ChartRow[] | null = prevChartData ? prevChartData.Countries.map((item) => toChartRow(item)) : null;
 
     return (
         <div className={styles.populationChartContainer}>
             <h1 className={styles.title}>World Population By Year</h1>
             <h2 className={styles.year}>{chartData.Year}</h2>
-            <Chart data={rows} prevData={prevRows} />
+
+            <div className={styles.controlsContainer}>
+                <div className={styles.selectsContainer}>
+                    <select
+                        className={styles.select}
+                        value={countriesToDisplayCount}
+                        onChange={onSelectCountriesToDisplayChange}>
+                        <option key={5} value={5}>Show 5 countries</option>
+                        <option key={10} value={10}>Show 10 countries</option>
+                        <option key={15} value={15}>Show 15 countries</option>
+                        <option key={20} value={20}>Show 20 countries</option>
+                        <option key={9999} value={9999}>All countries</option>
+                    </select>
+
+                    <select
+                        className={styles.select}
+                        value={indexes.current}
+                        onChange={onSelectYearChange}>
+                        {data.map((item, index) => (
+                            <option key={item.Year} value={index}>
+                                {item.Year}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className={styles.buttonsContainer}>
+                    <button type="button" onClick={goToPreviousYear} className={styles.button}>
+                        Previous year
+                    </button>
+
+                    <button type="button" onClick={toggleAutoplay} className={styles.button}>
+                        {isAutoplaying ? 'Pause autoplay' : 'Start autoplay'}
+                    </button>
+
+                    <button type="button" onClick={goToNextYear} className={styles.button}>
+                        Next year
+                    </button>
+                </div>
+            </div>
+
+            <Chart
+                data={rows}
+                prevData={prevRows}
+                countriesToDisplayCount={countriesToDisplayCount} />
         </div>
     );
-
 }
